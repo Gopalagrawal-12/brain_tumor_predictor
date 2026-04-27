@@ -1,569 +1,257 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NeuroScan · Brain Tumor Classifier</title>
-    <link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Mono:wght@400;500&family=Syne:wght@400;500;600&display=swap" rel="stylesheet">
-    <style>
-        *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>NeuroScan AI</title>
 
-        :root {
-            --ink: #0e1117;
-            --ink-muted: #5a6275;
-            --ink-faint: #9aa0ae;
-            --surface: #f5f4f0;
-            --panel: #ffffff;
-            --border: #e2e0da;
-            --border-strong: #ccc9c0;
-            --accent: #1a3a5c;
-            --accent-light: #e8eef5;
-            --accent-mid: #3b6ea0;
-            --danger: #8b2020;
-            --danger-light: #f9eded;
-            --success: #1a4d2e;
-            --success-light: #edf5f0;
-            --warn: #5c3a00;
-            --warn-light: #fdf5e6;
-            --radius: 10px;
-            --radius-lg: 16px;
-        }
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
 
-        body {
-            font-family: 'Syne', sans-serif;
-            background: var(--surface);
-            color: var(--ink);
-            min-height: 100vh;
-            padding: 0;
-        }
+<style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
 
-        /* ── Top bar ── */
-        .topbar {
-            background: var(--ink);
-            color: #fff;
-            padding: 0 2rem;
-            height: 52px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-        }
-        .topbar-logo {
-            font-family: 'DM Serif Display', serif;
-            font-size: 1.1rem;
-            letter-spacing: 0.02em;
-            color: #fff;
-        }
-        .topbar-logo span { color: #7aaed4; }
-        .topbar-tag {
-            font-size: 0.7rem;
-            letter-spacing: 0.12em;
-            text-transform: uppercase;
-            color: #7aaed4;
-            border: 1px solid #2e4f6e;
-            padding: 3px 10px;
-            border-radius: 20px;
-        }
+body {
+    font-family: 'Inter', sans-serif;
+    background: linear-gradient(135deg, #0f172a, #1e293b);
+    color: #fff;
+    min-height: 100vh;
+}
 
-        /* ── Layout ── */
-        .layout {
-            max-width: 960px;
-            margin: 0 auto;
-            padding: 2.5rem 1.5rem 4rem;
-            display: grid;
-            grid-template-columns: 340px 1fr;
-            gap: 1.5rem;
-            align-items: start;
-        }
+/* Header */
+.header {
+    text-align: center;
+    padding: 2rem 1rem;
+}
 
-        /* ── Panel base ── */
-        .panel {
-            background: var(--panel);
-            border: 1px solid var(--border);
-            border-radius: var(--radius-lg);
-            overflow: hidden;
-        }
-        .panel-head {
-            padding: 1rem 1.25rem 0.75rem;
-            border-bottom: 1px solid var(--border);
-        }
-        .panel-label {
-            font-size: 0.65rem;
-            letter-spacing: 0.14em;
-            text-transform: uppercase;
-            color: var(--ink-faint);
-            margin-bottom: 2px;
-        }
-        .panel-title {
-            font-size: 0.95rem;
-            font-weight: 600;
-            color: var(--ink);
-        }
+.header h1 {
+    font-size: 2rem;
+    font-weight: 600;
+}
 
-        /* ── Upload panel ── */
-        .upload-area {
-            padding: 1.25rem;
-        }
+.header span {
+    color: #38bdf8;
+}
 
-        .dropzone {
-            border: 1.5px dashed var(--border-strong);
-            border-radius: var(--radius);
-            padding: 2rem 1rem;
-            text-align: center;
-            cursor: pointer;
-            transition: border-color 0.2s, background 0.2s;
-            position: relative;
-            background: var(--surface);
-        }
-        .dropzone:hover, .dropzone.dragover {
-            border-color: var(--accent-mid);
-            background: var(--accent-light);
-        }
-        .dropzone input[type="file"] {
-            position: absolute;
-            inset: 0;
-            opacity: 0;
-            cursor: pointer;
-            width: 100%;
-            height: 100%;
-        }
-        .dz-icon {
-            width: 40px;
-            height: 40px;
-            margin: 0 auto 10px;
-            background: var(--accent-light);
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-        .dz-icon svg { width: 20px; height: 20px; stroke: var(--accent-mid); fill: none; stroke-width: 1.8; }
-        .dz-title {
-            font-size: 0.82rem;
-            font-weight: 600;
-            color: var(--ink);
-            margin-bottom: 3px;
-        }
-        .dz-sub {
-            font-size: 0.72rem;
-            color: var(--ink-faint);
-        }
+/* Container */
+.container {
+    max-width: 900px;
+    margin: auto;
+    padding: 1rem;
+}
 
-        #preview-wrap {
-            display: none;
-            margin-top: 1rem;
-            border-radius: var(--radius);
-            overflow: hidden;
-            border: 1px solid var(--border);
-            position: relative;
-        }
-        #preview-img {
-            width: 100%;
-            height: 180px;
-            object-fit: cover;
-            display: block;
-        }
-        .preview-name {
-            padding: 6px 10px;
-            font-size: 0.72rem;
-            color: var(--ink-muted);
-            background: var(--surface);
-            font-family: 'DM Mono', monospace;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
+/* Glass Card */
+.card {
+    background: rgba(255,255,255,0.05);
+    border-radius: 20px;
+    backdrop-filter: blur(12px);
+    border: 1px solid rgba(255,255,255,0.1);
+    padding: 2rem;
+    margin-bottom: 1.5rem;
+}
 
-        .btn-submit {
-            display: block;
-            width: 100%;
-            margin-top: 1rem;
-            padding: 0.75rem 1rem;
-            background: var(--ink);
-            color: #fff;
-            border: none;
-            border-radius: var(--radius);
-            font-family: 'Syne', sans-serif;
-            font-size: 0.85rem;
-            font-weight: 600;
-            letter-spacing: 0.04em;
-            cursor: pointer;
-            transition: background 0.2s, transform 0.1s;
-        }
-        .btn-submit:hover { background: #1e2533; }
-        .btn-submit:active { transform: scale(0.98); }
-        .btn-submit:disabled {
-            background: var(--border-strong);
-            cursor: not-allowed;
-            transform: none;
-        }
+/* Upload Area */
+.dropzone {
+    border: 2px dashed rgba(255,255,255,0.2);
+    padding: 2rem;
+    border-radius: 15px;
+    text-align: center;
+    cursor: pointer;
+    transition: 0.3s;
+}
 
-        /* ── Info box below upload ── */
-        .info-box {
-            margin: 1rem 0 0;
-            padding: 0.75rem 1rem;
-            background: var(--accent-light);
-            border-radius: var(--radius);
-            border-left: 3px solid var(--accent-mid);
-        }
-        .info-box p {
-            font-size: 0.72rem;
-            color: var(--accent);
-            line-height: 1.5;
-        }
-        .info-box strong { font-weight: 600; }
+.dropzone:hover {
+    border-color: #38bdf8;
+    background: rgba(56,189,248,0.1);
+}
 
-        /* ── Right column: result + scan ── */
-        .right-col { display: flex; flex-direction: column; gap: 1.5rem; }
+input[type="file"] {
+    display: none;
+}
 
-        /* ── Result panel ── */
-        .result-empty {
-            padding: 3rem 1.5rem;
-            text-align: center;
-        }
-        .result-empty-icon {
-            width: 56px; height: 56px;
-            border-radius: 50%;
-            background: var(--surface);
-            border: 1px solid var(--border);
-            display: flex; align-items: center; justify-content: center;
-            margin: 0 auto 12px;
-        }
-        .result-empty-icon svg { width: 26px; height: 26px; stroke: var(--ink-faint); fill: none; stroke-width: 1.5; }
-        .result-empty h3 {
-            font-size: 0.9rem;
-            font-weight: 600;
-            color: var(--ink-muted);
-            margin-bottom: 4px;
-        }
-        .result-empty p {
-            font-size: 0.75rem;
-            color: var(--ink-faint);
-            line-height: 1.5;
-        }
+.preview img {
+    width: 100%;
+    border-radius: 10px;
+    margin-top: 1rem;
+}
 
-        .result-content { padding: 1.25rem; }
+/* Button */
+.btn {
+    width: 100%;
+    padding: 0.9rem;
+    margin-top: 1rem;
+    border: none;
+    border-radius: 12px;
+    background: linear-gradient(90deg, #38bdf8, #6366f1);
+    color: white;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: 0.3s;
+}
 
-        .result-badge {
-            display: inline-flex;
-            align-items: center;
-            gap: 6px;
-            font-family: 'DM Mono', monospace;
-            font-size: 0.7rem;
-            letter-spacing: 0.08em;
-            text-transform: uppercase;
-            padding: 4px 10px;
-            border-radius: 20px;
-            margin-bottom: 1rem;
-        }
-        .badge-tumor {
-            background: var(--danger-light);
-            color: var(--danger);
-            border: 1px solid #f0c0c0;
-        }
-        .badge-clear {
-            background: var(--success-light);
-            color: var(--success);
-            border: 1px solid #b8dfc6;
-        }
-        .badge-dot {
-            width: 6px; height: 6px; border-radius: 50%;
-            background: currentColor;
-        }
+.btn:hover {
+    transform: scale(1.03);
+}
 
-        .result-class {
-            font-family: 'DM Serif Display', serif;
-            font-size: 2rem;
-            color: var(--ink);
-            line-height: 1.1;
-            margin-bottom: 0.25rem;
-            text-transform: capitalize;
-        }
-        .result-desc {
-            font-size: 0.78rem;
-            color: var(--ink-muted);
-            line-height: 1.5;
-            margin-bottom: 1.5rem;
-            max-width: 340px;
-        }
+.btn:disabled {
+    background: gray;
+    cursor: not-allowed;
+}
 
-        .conf-section { margin-top: 1rem; }
-        .conf-label {
-            display: flex;
-            justify-content: space-between;
-            font-size: 0.72rem;
-            color: var(--ink-muted);
-            margin-bottom: 6px;
-        }
-        .conf-label span:last-child {
-            font-family: 'DM Mono', monospace;
-            font-weight: 500;
-            color: var(--ink);
-        }
-        .conf-track {
-            height: 6px;
-            background: var(--surface);
-            border-radius: 999px;
-            overflow: hidden;
-            border: 1px solid var(--border);
-        }
-        .conf-fill {
-            height: 100%;
-            border-radius: 999px;
-            transition: width 0.8s cubic-bezier(0.22, 1, 0.36, 1);
-        }
-        .fill-tumor { background: linear-gradient(90deg, #c97b7b, #8b2020); }
-        .fill-clear { background: linear-gradient(90deg, #68b887, #1a4d2e); }
+/* Result */
+.result {
+    text-align: center;
+}
 
-        /* ── Classes legend ── */
-        .classes-grid {
-            display: grid;
-            grid-template-columns: 1fr 1fr;
-            gap: 8px;
-            padding: 1.25rem;
-        }
-        .class-chip {
-            padding: 8px 10px;
-            border: 1px solid var(--border);
-            border-radius: var(--radius);
-            background: var(--surface);
-            transition: border-color 0.2s, background 0.2s;
-        }
-        .class-chip.active-chip {
-            border-color: var(--accent-mid);
-            background: var(--accent-light);
-        }
-        .chip-name {
-            font-size: 0.78rem;
-            font-weight: 600;
-            color: var(--ink);
-            text-transform: capitalize;
-            margin-bottom: 2px;
-        }
-        .chip-sub {
-            font-size: 0.65rem;
-            color: var(--ink-faint);
-        }
+.result h2 {
+    font-size: 2rem;
+    margin-bottom: 0.5rem;
+}
 
-        /* ── Scan image panel ── */
-        .scan-panel .panel-head { display: flex; align-items: center; justify-content: space-between; }
-        .scan-panel img {
-            width: 100%;
-            max-height: 340px;
-            object-fit: contain;
-            display: block;
-            background: #0a0a0a;
-            padding: 12px;
-        }
+.badge {
+    display: inline-block;
+    padding: 6px 14px;
+    border-radius: 20px;
+    margin-bottom: 1rem;
+    font-size: 0.8rem;
+}
 
-        /* ── Disclaimer ── */
-        .disclaimer {
-            margin-top: 1.5rem;
-            padding: 0.85rem 1.1rem;
-            background: var(--warn-light);
-            border: 1px solid #f0d8a8;
-            border-radius: var(--radius);
-            font-size: 0.7rem;
-            color: var(--warn);
-            line-height: 1.55;
-        }
-        .disclaimer strong { font-weight: 600; }
+.tumor {
+    background: rgba(255,0,0,0.2);
+    color: #ff6b6b;
+}
 
-        /* ── Loading state ── */
-        .btn-submit.loading {
-            display: flex; align-items: center; justify-content: center; gap: 8px;
-        }
-        .spinner {
-            width: 14px; height: 14px;
-            border: 2px solid rgba(255,255,255,0.3);
-            border-top-color: #fff;
-            border-radius: 50%;
-            animation: spin 0.7s linear infinite;
-        }
-        @keyframes spin { to { transform: rotate(360deg); } }
+.clear {
+    background: rgba(0,255,150,0.2);
+    color: #34d399;
+}
 
-        /* ── Responsive ── */
-        @media (max-width: 700px) {
-            .layout { grid-template-columns: 1fr; padding: 1rem; }
-            .topbar { padding: 0 1rem; }
-        }
-    </style>
+/* Confidence Bar */
+.bar {
+    height: 8px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 10px;
+    overflow: hidden;
+    margin-top: 10px;
+}
+
+.fill {
+    height: 100%;
+    background: linear-gradient(90deg,#38bdf8,#6366f1);
+}
+
+/* Image Display */
+.scan img {
+    width: 100%;
+    border-radius: 12px;
+}
+
+/* Disclaimer */
+.disclaimer {
+    font-size: 0.75rem;
+    opacity: 0.7;
+    margin-top: 1rem;
+    text-align: center;
+}
+</style>
 </head>
+
 <body>
 
-<header class="topbar">
-    <span class="topbar-logo">Neuro<span>Scan</span></span>
-    <span class="topbar-tag">Research prototype</span>
-</header>
+<div class="header">
+    <h1>Neuro<span>Scan AI</span></h1>
+    <p>Brain Tumor Classification System</p>
+</div>
 
-<main class="layout">
+<div class="container">
 
-    <!-- ── LEFT: Upload ── -->
-    <div>
-        <div class="panel">
-            <div class="panel-head">
-                <p class="panel-label">Input</p>
-                <p class="panel-title">MRI Scan Upload</p>
+    <!-- Upload -->
+    <div class="card">
+        <form method="POST" enctype="multipart/form-data" id="scan-form">
+
+            <label class="dropzone">
+                Click or Drop MRI Image
+                <input type="file" name="image" id="file-input" required>
+            </label>
+
+            <div class="preview" id="preview-wrap" style="display:none;">
+                <img id="preview-img">
+                <p id="preview-name"></p>
             </div>
 
-            <form class="upload-area" method="POST" enctype="multipart/form-data" id="scan-form">
-                <div class="dropzone" id="dropzone">
-                    <input type="file" name="image" id="file-input" accept="image/*" required>
-                    <div class="dz-icon">
-                        <svg viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/></svg>
-                    </div>
-                    <p class="dz-title">Drop scan here or click to browse</p>
-                    <p class="dz-sub">Accepts JPEG, PNG · T1/T2/FLAIR</p>
-                </div>
-
-                <div id="preview-wrap">
-                    <img id="preview-img" src="" alt="Preview">
-                    <div class="preview-name" id="preview-name"></div>
-                </div>
-
-                <button type="submit" class="btn-submit" id="submit-btn" {% if not prediction %}disabled{% endif %} style="{% if not prediction %}pointer-events:none{% endif %}">
-                    Run Analysis
-                </button>
-
-                <div class="info-box">
-                    <p><strong>4 classes:</strong> Glioma · Meningioma · Pituitary · No Tumor. Model accuracy: ~98% on held-out test set.</p>
-                </div>
-            </form>
-        </div>
-
-        <div class="disclaimer" style="margin-top: 1rem;">
-            <strong>Not for clinical use.</strong> This tool is a research prototype and has not been validated for diagnostic purposes. Always consult a qualified radiologist and neurologist for medical decisions.
-        </div>
+            <button type="submit" class="btn" id="submit-btn" disabled>
+                Analyze Scan
+            </button>
+        </form>
     </div>
 
-    <!-- ── RIGHT ── -->
-    <div class="right-col">
+    <!-- Result -->
+    <div class="card result">
+        {% if prediction %}
 
-        <!-- Result panel -->
-        <div class="panel">
-            <div class="panel-head">
-                <p class="panel-label">Output</p>
-                <p class="panel-title">Classification Result</p>
-            </div>
-
-            {% if prediction %}
-            <div class="result-content">
-                {% if prediction == 'notumor' %}
-                <span class="result-badge badge-clear"><span class="badge-dot"></span>Clear</span>
-                {% else %}
-                <span class="result-badge badge-tumor"><span class="badge-dot"></span>Tumor detected</span>
-                {% endif %}
-
-                <div class="result-class">
-                    {% if prediction == 'notumor' %}No Tumor{% else %}{{ prediction }}{% endif %}
-                </div>
-                <p class="result-desc">
-                    {% if prediction == 'glioma' %}
-                    Glioma arises from glial cells and can be benign or malignant. Further histopathological grading is required.
-                    {% elif prediction == 'meningioma' %}
-                    Meningioma originates in the meninges. Most are benign (WHO Grade I) but require specialist review.
-                    {% elif prediction == 'pituitary' %}
-                    Pituitary tumor detected. These are often adenomas and may affect hormonal function.
-                    {% else %}
-                    No evidence of tumor detected in the provided scan at the model's confidence threshold.
-                    {% endif %}
-                </p>
-
-                <div class="conf-section">
-                    <div class="conf-label">
-                        <span>Model confidence</span>
-                        <span>{{ confidence }}%</span>
-                    </div>
-                    <div class="conf-track">
-                        <div class="conf-fill {% if prediction == 'notumor' %}fill-clear{% else %}fill-tumor{% endif %}"
-                             style="width: {{ confidence }}%;">
-                        </div>
-                    </div>
-                </div>
-            </div>
+            {% if prediction == 'notumor' %}
+                <div class="badge clear">No Tumor</div>
             {% else %}
-            <div class="result-empty">
-                <div class="result-empty-icon">
-                    <svg viewBox="0 0 24 24"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
-                </div>
-                <h3>No scan analysed yet</h3>
-                <p>Upload an MRI image and click<br>"Run Analysis" to see the result.</p>
-            </div>
+                <div class="badge tumor">Tumor Detected</div>
             {% endif %}
-        </div>
 
-        <!-- Class legend -->
-        <div class="panel">
-            <div class="panel-head">
-                <p class="panel-label">Reference</p>
-                <p class="panel-title">Detectable Classes</p>
-            </div>
-            <div class="classes-grid">
-                {% set classes = [
-                    ('glioma', 'Glial cell origin, variable grade'),
-                    ('meningioma', 'Meninges origin, mostly benign'),
-                    ('pituitary', 'Pituitary gland adenoma'),
-                    ('notumor', 'No pathology detected')
-                ] %}
-                {% for cls, desc in classes %}
-                <div class="class-chip {% if prediction and (prediction == cls or (cls == 'notumor' and prediction == 'notumor')) %}active-chip{% endif %}">
-                    <div class="chip-name">{{ 'No Tumor' if cls == 'notumor' else cls }}</div>
-                    <div class="chip-sub">{{ desc }}</div>
-                </div>
-                {% endfor %}
-            </div>
-        </div>
+            <h2>
+                {% if prediction == 'notumor' %}
+                    No Tumor
+                {% else %}
+                    {{ prediction }}
+                {% endif %}
+            </h2>
 
-        <!-- Uploaded scan display -->
-        {% if image_path %}
-        <div class="panel scan-panel">
-            <div class="panel-head">
-                <div>
-                    <p class="panel-label">Input scan</p>
-                    <p class="panel-title">Uploaded Image</p>
-                </div>
+            <p>Confidence: {{ confidence }}%</p>
+
+            <div class="bar">
+                <div class="fill" style="width: {{ confidence }}%;"></div>
             </div>
-            <img src="{{ image_path }}" alt="Uploaded MRI scan">
-        </div>
+
+        {% else %}
+            <p>No analysis yet</p>
         {% endif %}
-
     </div>
-</main>
+
+    <!-- Uploaded Image -->
+    {% if image_path %}
+    <div class="card scan">
+        <img src="{{ image_path }}">
+    </div>
+    {% endif %}
+
+    <div class="disclaimer">
+        Not for clinical use. Consult professionals.
+    </div>
+
+</div>
 
 <script>
-    const input = document.getElementById('file-input');
-    const previewWrap = document.getElementById('preview-wrap');
-    const previewImg = document.getElementById('preview-img');
-    const previewName = document.getElementById('preview-name');
-    const submitBtn = document.getElementById('submit-btn');
-    const form = document.getElementById('scan-form');
-    const dropzone = document.getElementById('dropzone');
+const input = document.getElementById('file-input');
+const previewWrap = document.getElementById('preview-wrap');
+const previewImg = document.getElementById('preview-img');
+const previewName = document.getElementById('preview-name');
+const submitBtn = document.getElementById('submit-btn');
+const form = document.getElementById('scan-form');
 
-    function handleFile(file) {
-        if (!file) return;
-        const url = URL.createObjectURL(file);
-        previewImg.src = url;
-        previewName.textContent = file.name;
-        previewWrap.style.display = 'block';
-        submitBtn.disabled = false;
-        submitBtn.style.pointerEvents = '';
-    }
+input.addEventListener('change', () => {
+    const file = input.files[0];
+    if (!file) return;
 
-    input.addEventListener('change', () => handleFile(input.files[0]));
+    previewImg.src = URL.createObjectURL(file);
+    previewName.textContent = file.name;
+    previewWrap.style.display = 'block';
+    submitBtn.disabled = false;
+});
 
-    dropzone.addEventListener('dragover', e => { e.preventDefault(); dropzone.classList.add('dragover'); });
-    dropzone.addEventListener('dragleave', () => dropzone.classList.remove('dragover'));
-    dropzone.addEventListener('drop', e => {
-        e.preventDefault();
-        dropzone.classList.remove('dragover');
-        const file = e.dataTransfer.files[0];
-        if (file) { input.files = e.dataTransfer.files; handleFile(file); }
-    });
-
-    form.addEventListener('submit', () => {
-        submitBtn.disabled = true;
-        submitBtn.innerHTML = '<span class="spinner"></span> Analysing…';
-        submitBtn.classList.add('loading');
-    });
+form.addEventListener('submit', () => {
+    submitBtn.innerText = "Analyzing...";
+    submitBtn.disabled = true;
+});
 </script>
 
 </body>

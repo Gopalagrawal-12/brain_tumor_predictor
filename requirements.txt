@@ -1,5 +1,6 @@
 tensorflow
 flask
+scikit-learn
 pillow
 numpy
 uuid

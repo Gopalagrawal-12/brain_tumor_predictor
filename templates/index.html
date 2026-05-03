@@ -1,258 +1,173 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NeuroScan AI</title>
-
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
-
-<style>
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
-}
-
-body {
-    font-family: 'Inter', sans-serif;
-    background: linear-gradient(135deg, #0f172a, #1e293b);
-    color: #fff;
-    min-height: 100vh;
-}
-
-/* Header */
-.header {
-    text-align: center;
-    padding: 2rem 1rem;
-}
-
-.header h1 {
-    font-size: 2rem;
-    font-weight: 600;
-}
-
-.header span {
-    color: #38bdf8;
-}
-
-/* Container */
-.container {
-    max-width: 900px;
-    margin: auto;
-    padding: 1rem;
-}
-
-/* Glass Card */
-.card {
-    background: rgba(255,255,255,0.05);
-    border-radius: 20px;
-    backdrop-filter: blur(12px);
-    border: 1px solid rgba(255,255,255,0.1);
-    padding: 2rem;
-    margin-bottom: 1.5rem;
-}
-
-/* Upload Area */
-.dropzone {
-    border: 2px dashed rgba(255,255,255,0.2);
-    padding: 2rem;
-    border-radius: 15px;
-    text-align: center;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.dropzone:hover {
-    border-color: #38bdf8;
-    background: rgba(56,189,248,0.1);
-}
-
-input[type="file"] {
-    display: none;
-}
-
-.preview img {
-    width: 100%;
-    border-radius: 10px;
-    margin-top: 1rem;
-}
-
-/* Button */
-.btn {
-    width: 100%;
-    padding: 0.9rem;
-    margin-top: 1rem;
-    border: none;
-    border-radius: 12px;
-    background: linear-gradient(90deg, #38bdf8, #6366f1);
-    color: white;
-    font-size: 1rem;
-    cursor: pointer;
-    transition: 0.3s;
-}
-
-.btn:hover {
-    transform: scale(1.03);
-}
-
-.btn:disabled {
-    background: gray;
-    cursor: not-allowed;
-}
-
-/* Result */
-.result {
-    text-align: center;
-}
-
-.result h2 {
-    font-size: 2rem;
-    margin-bottom: 0.5rem;
-}
-
-.badge {
-    display: inline-block;
-    padding: 6px 14px;
-    border-radius: 20px;
-    margin-bottom: 1rem;
-    font-size: 0.8rem;
-}
-
-.tumor {
-    background: rgba(255,0,0,0.2);
-    color: #ff6b6b;
-}
-
-.clear {
-    background: rgba(0,255,150,0.2);
-    color: #34d399;
-}
-
-/* Confidence Bar */
-.bar {
-    height: 8px;
-    background: rgba(255,255,255,0.1);
-    border-radius: 10px;
-    overflow: hidden;
-    margin-top: 10px;
-}
-
-.fill {
-    height: 100%;
-    background: linear-gradient(90deg,#38bdf8,#6366f1);
-}
-
-/* Image Display */
-.scan img {
-    width: 100%;
-    border-radius: 12px;
-}
-
-/* Disclaimer */
-.disclaimer {
-    font-size: 0.75rem;
-    opacity: 0.7;
-    margin-top: 1rem;
-    text-align: center;
-}
-</style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cerebro Analytics | Clinical Imaging</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Crimson+Pro:wght@600&family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .serif-title { font-family: 'Crimson Pro', serif; }
+        .clinical-border { border: 1px solid #262626; }
+        .report-gradient { background: linear-gradient(180deg, #0a0a0a 0%, #000000 100%); }
+    </style>
 </head>
+<body class="bg-black text-zinc-300 min-h-screen p-6 md:p-12">
 
-<body>
+    <div class="max-w-7xl mx-auto">
+        <header class="border-b border-zinc-800 pb-8 mb-12 flex flex-col md:flex-row justify-between items-start">
+            <div>
+                <h1 class="serif-title text-4xl text-white tracking-tight uppercase">Cerebro <span class="font-light text-zinc-500">Analytics</span></h1>
+                <p class="text-zinc-500 text-xs mt-2 uppercase tracking-[0.3em]">Advanced Neural Imaging & Pathological Classification</p>
+            </div>
+            <div class="mt-4 md:mt-0 text-left md:text-right border-l md:border-l-0 md:border-r border-zinc-800 pl-4 md:pl-0 md:pr-4">
+                <p class="text-[10px] text-zinc-600 font-bold uppercase tracking-widest">System Status</p>
+                <p class="text-emerald-500 text-xs font-mono">● OPERATIONAL</p>
+            </div>
+        </header>
 
-<div class="header">
-    <h1>Neuro<span>Scan AI</span></h1>
-    <p>Brain Tumor Classification System</p>
-</div>
-
-<div class="container">
-
-    <!-- Upload -->
-    <div class="card">
-        <form method="POST" enctype="multipart/form-data" id="scan-form">
-
-            <label class="dropzone">
-                Click or Drop MRI Image
-                <input type="file" name="image" id="file-input" required>
-            </label>
-
-            <div class="preview" id="preview-wrap" style="display:none;">
-                <img id="preview-img">
-                <p id="preview-name"></p>
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <div class="lg:col-span-4 space-y-8">
+                <section class="space-y-4">
+                    <h2 class="text-xs font-bold text-zinc-500 uppercase tracking-widest">01. Imaging Source</h2>
+                    <div class="relative group clinical-border bg-zinc-950 hover:border-zinc-500 transition-all duration-500">
+                        <input type="file" id="imageInput" accept="image/*" onchange="previewImage(event)" class="absolute inset-0 w-full h-full opacity-0 cursor-pointer z-10" />
+                        <div class="p-2">
+                            <img id="preview" class="hidden w-full aspect-square object-cover grayscale brightness-75 border border-zinc-800" />
+                            <div id="dropZoneText" class="py-24 text-center">
+                                <p class="text-zinc-600 text-[10px] uppercase tracking-widest">Upload DICOM/Standard MRI</p>
+                            </div>
+                        </div>
+                    </div>
+                    <button onclick="uploadImage()" id="btn" class="w-full bg-zinc-100 text-black py-4 text-[10px] font-bold uppercase tracking-[0.2em] hover:bg-white transition-all">
+                        Execute Diagnostic Sequence
+                    </button>
+                </section>
             </div>
 
-            <button type="submit" class="btn" id="submit-btn" disabled>
-                Analyze Scan
-            </button>
-        </form>
-    </div>
+            <div class="lg:col-span-8">
+                <div id="resultPlaceholder" class="h-full min-h-[500px] flex items-center justify-center border border-zinc-900 bg-zinc-950/20">
+                    <p class="text-zinc-700 text-xs uppercase tracking-widest animate-pulse">Waiting for Data Input...</p>
+                </div>
 
-    <!-- Result -->
-    <div class="card result">
-        {% if prediction %}
+                <div id="resultArea" class="hidden space-y-10 animate-in fade-in duration-700">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-1">
+                        <div class="bg-zinc-950 p-6 clinical-border">
+                            <p class="text-[9px] uppercase text-zinc-500 font-bold tracking-widest mb-2">Classification</p>
+                            <h3 id="label" class="text-xl font-medium text-white tracking-tight">--</h3>
+                        </div>
+                        <div class="bg-zinc-950 p-6 clinical-border">
+                            <p class="text-[9px] uppercase text-zinc-500 font-bold tracking-widest mb-2">Confidence Level</p>
+                            <h3 id="confidence" class="text-xl font-mono text-zinc-300">--</h3>
+                        </div>
+                        <div class="bg-zinc-950 p-6 clinical-border">
+                            <p class="text-[9px] uppercase text-zinc-500 font-bold tracking-widest mb-2">Pathology Status</p>
+                            <span id="impairmentBadge" class="text-xs font-bold tracking-widest uppercase italic">--</span>
+                        </div>
+                    </div>
 
-            {% if prediction == 'notumor' %}
-                <div class="badge clear">No Tumor</div>
-            {% else %}
-                <div class="badge tumor">Tumor Detected</div>
-            {% endif %}
-
-            <h2>
-                {% if prediction == 'notumor' %}
-                    No Tumor
-                {% else %}
-                    {{ prediction }}
-                {% endif %}
-            </h2>
-
-            <p>Confidence: {{ confidence }}%</p>
-
-            <div class="bar">
-                <div class="fill" style="width: {{ confidence }}%;"></div>
+                    <div class="bg-zinc-950 p-8 clinical-border">
+                        <div class="flex items-center justify-between mb-10">
+                            <h2 class="text-xs font-bold text-zinc-500 uppercase tracking-[0.2em]">02. Statistical Distribution</h2>
+                            <div class="h-[1px] flex-grow mx-6 bg-zinc-900"></div>
+                        </div>
+                        <div class="h-72">
+                            <canvas id="predictionChart"></canvas>
+                        </div>
+                    </div>
+                </div>
             </div>
-
-        {% else %}
-            <p>No analysis yet</p>
-        {% endif %}
+        </div>
     </div>
 
-    <!-- Uploaded Image -->
-    {% if image_path %}
-    <div class="card scan">
-        <img src="{{ image_path }}">
-    </div>
-    {% endif %}
+    <script>
+        let myChart = null;
 
-    <div class="disclaimer">
-        Not for clinical use. Consult professionals.
-    </div>
+        function previewImage(event) {
+            const preview = document.getElementById('preview');
+            const dropZoneText = document.getElementById('dropZoneText');
+            preview.src = URL.createObjectURL(event.target.files[0]);
+            preview.classList.remove('hidden');
+            dropZoneText.classList.add('hidden');
+        }
 
-</div>
+        async function uploadImage() {
+            const fileInput = document.getElementById('imageInput');
+            if (fileInput.files.length === 0) return;
 
-<script>
-const input = document.getElementById('file-input');
-const previewWrap = document.getElementById('preview-wrap');
-const previewImg = document.getElementById('preview-img');
-const previewName = document.getElementById('preview-name');
-const submitBtn = document.getElementById('submit-btn');
-const form = document.getElementById('scan-form');
+            const btn = document.getElementById('btn');
+            btn.innerText = "Analyzing Pathological Markers...";
+            btn.classList.add('opacity-30');
 
-input.addEventListener('change', () => {
-    const file = input.files[0];
-    if (!file) return;
+            const formData = new FormData();
+            formData.append('file', fileInput.files[0]);
 
-    previewImg.src = URL.createObjectURL(file);
-    previewName.textContent = file.name;
-    previewWrap.style.display = 'block';
-    submitBtn.disabled = false;
-});
+            try {
+                // UPDATE THIS URL TO YOUR EC2 PUBLIC IP
+                const response = await fetch('http://3.27.45.153:8000/predict', { method: 'POST', body: formData });
+                const data = await response.json();
 
-form.addEventListener('submit', () => {
-    submitBtn.innerText = "Analyzing...";
-    submitBtn.disabled = true;
-});
-</script>
+                document.getElementById('resultPlaceholder').classList.add('hidden');
+                document.getElementById('resultArea').classList.remove('hidden');
 
+                document.getElementById('label').innerText = data.prediction;
+                document.getElementById('confidence').innerText = (data.confidence * 100).toFixed(2) + "%";
+
+                const badge = document.getElementById('impairmentBadge');
+                const isNon = data.prediction.toLowerCase().includes("non");
+                badge.innerText = isNon ? "Negative - No Impairment" : "Positive - Impairment Detected";
+                badge.className = isNon ? "text-emerald-500 text-xs italic" : "text-red-500 text-xs italic";
+
+                updateChart(data.raw_predictions[0]);
+
+            } catch (e) {
+                alert("Clinical server offline.");
+            } finally {
+                btn.innerText = "Execute Diagnostic Sequence";
+                btn.classList.remove('opacity-30');
+            }
+        }
+
+        function updateChart(probabilities) {
+            const ctx = document.getElementById('predictionChart').getContext('2d');
+            const labels = ["Mild", "Moderate", "None", "Very Mild"];
+            
+            if (myChart) myChart.destroy();
+
+            myChart = new Chart(ctx, {
+                type: 'bar',
+                data: {
+                    labels: labels,
+                    datasets: [{
+                        data: probabilities,
+                        backgroundColor: '#ffffff',
+                        hoverBackgroundColor: '#3b82f6',
+                        barThickness: 12,
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: { legend: { display: false } },
+                    scales: {
+                        y: { 
+                            beginAtZero: true, 
+                            max: 1, 
+                            ticks: { color: '#27272a', font: { size: 9 } },
+                            grid: { color: '#18181b' } 
+                        },
+                        x: { 
+                            ticks: { color: '#52525b', font: { size: 10, weight: 'bold' } },
+                            grid: { display: false } 
+                        }
+                    }
+                }
+            });
+        }
+    </script>
 </body>
 </html>
